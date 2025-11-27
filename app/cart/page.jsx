@@ -7,11 +7,17 @@ export default function CartPage() {
 
   const total = cart.reduce((sum, p) => sum + p.price * p.quantity, 0);
 
+  if (cart.length === 0)
+    return (
+      <div className="px-6 py-16">
+        <h1 className="text-4xl font-bold mb-10">Panier</h1>
+        <p>Votre panier est vide.</p>
+      </div>
+    );
+
   return (
     <div className="px-6 py-16">
       <h1 className="text-4xl font-bold mb-10">Panier</h1>
-
-      {cart.length === 0 && <p>Votre panier est vide.</p>}
 
       <div className="space-y-6">
         {cart.map((item) => (
@@ -35,35 +41,33 @@ export default function CartPage() {
             >
               Supprimer
             </button>
-         className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition"
-  onClick={async () => {
-    const res = await fetch("/api/orders/new", {
-      method: "POST",
-      body: JSON.stringify({
-        items: cart,
-        total,
-        customer: "Client Test"
-      })
-    });
+          </div>
+        ))}
+      </div>
 
-    alert("Commande enregistrée !");
-    clearCart();
-    location.reload();
-  }}
->
-  Commander
-          <button
-            className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition"
-            onClick={() => {
-              clearCart();
-              alert("Commande confirmée !");
-              location.reload();
-            }}
-          >
-            Commander
-          </button>
-        </div>
-      )}
+      <div className="mt-10 p-6 bg-neutral-900 rounded-xl border border-white/10">
+        <p className="text-xl mb-4">Total : {total}€</p>
+
+        <button
+          className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition w-full"
+          onClick={async () => {
+            await fetch("/api/orders/new", {
+              method: "POST",
+              body: JSON.stringify({
+                items: cart,
+                total,
+                customer: "Client Test",
+              }),
+            });
+
+            alert("Commande enregistrée !");
+            clearCart();
+            location.reload();
+          }}
+        >
+          Commander
+        </button>
+      </div>
     </div>
   );
 }
