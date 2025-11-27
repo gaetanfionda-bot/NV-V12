@@ -1,23 +1,20 @@
 {
-  "name": "nightvision-v11",
+  "name": "nv-v12",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
   "dependencies": {
-    "react": "^18.3.0",
-    "react-dom": "^18.3.0",
-    "react-router-dom": "^6.22.0",
-    "@google/model-viewer": "^3.4.0",
-    "lucide-react": "^0.397.0"
-  },
-  "devDependencies": {
-    "vite": "^5.1.0",
-    "tailwindcss": "^3.4.0",
     "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32"
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.0.8",
+    "next": "14.1.0",
+    "postcss": "^8.4.31",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.3.5"
   }
 }
