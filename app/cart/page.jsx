@@ -35,13 +35,23 @@ export default function CartPage() {
             >
               Supprimer
             </button>
-          </div>
-        ))}
-      </div>
+         className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition"
+  onClick={async () => {
+    const res = await fetch("/api/orders/new", {
+      method: "POST",
+      body: JSON.stringify({
+        items: cart,
+        total,
+        customer: "Client Test"
+      })
+    });
 
-      {cart.length > 0 && (
-        <div className="mt-10">
-          <p className="text-xl mb-4">Total : {total} €</p>
+    alert("Commande enregistrée !");
+    clearCart();
+    location.reload();
+  }}
+>
+  Commander
           <button
             className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition"
             onClick={() => {
