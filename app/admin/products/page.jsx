@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { getAdminProducts } from "@/lib/admin-db";
+import { getProducts } from "@/lib/json-db";
+
 
 export default function AdminProducts() {
-  const products = getAdminProducts();
+const products = getProducts();
+
 
   return (
     <div className="px-6 py-16">
