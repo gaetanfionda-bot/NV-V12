@@ -1,63 +1,72 @@
 "use client";
 
-import { 
-  getAdminOrder, 
-  updateAdminOrderStatus 
-} from "@/lib/admin-db.js";
+import { getAdminOrder, updateAdminOrder } from "@/lib/admin-db.js";
+import { useRouter } from "next/navigation";
 
-import { useParams } from "next/navigation";
-import { useState } from "react";
+export default function AdminOrderDetails({ params }) {
+  const order = getAdminOrder(params.id);
+  const router = useRouter();
 
-export default function OrderDetailPage() {
-  const { id } = useParams();
+  if (!order)
+    return (
+      <div className="p-10">
+        <h1 className="text-4xl font-bold mb-6">Commande introuvable</h1>
+        <p>Aucune commande trouvée avec cet identifiant.</p>
+      </div>
+    );
 
-  const order = getAdminOrder(id);   // ✅ correct
-  const [status, setStatus] = useState(order?.status);
+  const nextStatus = (current) => {
+    if (current === "En attente") return "Envoyée";
+    if (current === "Envoyée") return "Terminée";
+    return "Terminée";
+  };
 
-  if (!order) {
-    return <div className="p-10">Commande introuvable.</div>;
-  }
-
-  function changeStatus(newStatus) {
-    setStatus(newStatus);
-    updateAdminOrderStatus(id, newStatus);  // ✅ importée
-    alert("Statut mis à jour !");
+  function updateStatus() {
+    updateAdminOrder(order.id, { status: nextStatus(order.status) });
+    router.push("/admin/orders");
   }
 
   return (
     <div className="p-10 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">Commande : {order.id}</h1>
+      <h1 className="text-4xl font-bold mb-6">Commande : {order.id}</h1>
 
-      <p className="mb-2 text-neutral-300">Client : {order.customer}</p>
-      <p className="mb-2 text-neutral-300">Total : {order.total}€</p>
+      <p className="mb-2">
+        <strong>Client :</strong> {order.customer}
+      </p>
 
-      <h2 className="text-xl font-semibold mt-6 mb-3">Produits :</h2>
-      <ul className="mb-6">
+      <p className="mb-2">
+        <strong>Total :</strong> {order.total}€
+      </p>
+
+      <p className="mb-4">
+        <strong>Statut :</strong>{" "}
+        <span className="text-blue-400">{order.status}</span>
+      </p>
+
+      <h2 className="text-2xl font-semibold mt-6 mb-3">Articles</h2>
+
+      <div className="space-y-3">
         {order.items.map((item) => (
-          <li key={item.id} className="text-neutral-400">
-            {item.name} × {item.quantity}
-          </li>
-        ))}
-      </ul>
-
-      <h2 className="text-xl font-semibold mb-3">Statut :</h2>
-      <div className="flex gap-3">
-        {["En attente", "Validée", "Expédiée", "Terminée"].map((st) => (
-          <button
-            key={st}
-            onClick={() => changeStatus(st)}
-            className={`px-4 py-2 rounded ${
-              status === st ? "bg-white text-black" : "bg-neutral-700"
-            }`}
+          <div
+            key={item.id}
+            className="border border-white/10 bg-neutral-900 p-3 rounded-lg"
           >
-            {st}
-          </button>
+            <p>
+              <strong>{item.name}</strong>
+            </p>
+            <p>
+              {item.price}€ × {item.quantity}
+            </p>
+          </div>
         ))}
       </div>
 
-      <a href="/admin/orders" className="block mt-8 text-neutral-400">
-        ← Retour aux commandes
-      </a>
+      <button
+        className="mt-8 w-full py-3 bg-white text-black rounded-lg hover:bg-neutral-300 transition"
+        onClick={updateStatus}
+      >
+        Passer à : {nextStatus(order.status)}
+      </button>
     </div>
   );
 }
