@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { getAdminProducts } from "@/lib/admin-db";
+import { getAdminProducts } from "@/lib/admin-db.js";
 
 export default function AdminProducts() {
   const products = getAdminProducts(); // ⭐ PREND LES PRODUITS ADMIN
