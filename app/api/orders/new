@@ -1,0 +1,48 @@
+"use client";
+
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+
+export default function CheckoutSuccess() {
+  const params = useSearchParams();
+
+  const id = params.get("id");
+  const total = params.get("total");
+  const email = params.get("email");
+
+  return (
+    <div className="px-6 py-20 max-w-xl mx-auto text-center">
+      <h1 className="text-4xl font-bold mb-6">Merci pour votre commande 🎉</h1>
+
+      {id ? (
+        <div className="space-y-4 mb-10">
+          <p className="text-xl">
+            <span className="font-semibold">Commande n° :</span> {id}
+          </p>
+
+          <p className="text-xl">
+            <span className="font-semibold">Montant total :</span> {total}€
+          </p>
+
+          {email && (
+            <p className="text-neutral-400">
+              Une confirmation a été envoyée à <strong>{email}</strong>.
+            </p>
+          )}
+        </div>
+      ) : (
+        <p className="text-neutral-400 mb-10">
+          Aucun détail de commande trouvé. Si vous venez de commander,
+          vérifiez vos e-mails.
+        </p>
+      )}
+
+      <Link
+        href="/shop"
+        className="px-6 py-3 bg-white text-black rounded-lg font-semibold hover:bg-neutral-300 transition inline-block"
+      >
+        Retour à la boutique
+      </Link>
+    </div>
+  );
+}
