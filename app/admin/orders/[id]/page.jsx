@@ -1,6 +1,6 @@
 "use client";
 
-import { getAdminOrders, updateAdminOrderStatus } from "@/lib/admin-db";
+import { getAdminOrder } from "@/lib/admin-db.js";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
