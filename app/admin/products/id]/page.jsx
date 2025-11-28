@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { getAdminProduct, updateAdminProduct } from "@/lib/admin-db";
+import { getAdminProduct, updateAdminProduct } from "@/lib/admin-db.js";
 import { useRouter } from "next/navigation";
 
 export default function EditProduct({ params }) {
