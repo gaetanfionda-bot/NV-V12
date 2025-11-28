@@ -1,1 +1,1 @@
-// Orders API route placeholder
+return NextResponse.json({ success: true, id: newOrder.id });
