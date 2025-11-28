@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic"; // ⬅️ IMPORTANT POUR VERCEL
+
 import { useSearchParams } from "next/navigation";
 
 export default function CheckoutSuccessPage() {
