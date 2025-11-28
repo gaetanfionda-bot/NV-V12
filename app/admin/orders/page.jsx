@@ -1,6 +1,6 @@
 "use client";
 
-import { getAdminOrders } from "@/lib/admin-db.js";
+import { getAdminOrders, updateAdminOrder } from "@/lib/admin-db.js";
 
 import { useState, useEffect } from "react";
 
