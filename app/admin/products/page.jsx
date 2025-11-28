@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { getProducts } from "@/lib/json-db";
-
+import { getAdminProducts } from "@/lib/admin-db";
 
 export default function AdminProducts() {
-const products = getProducts();
-
+  const products = getAdminProducts(); // ⭐ PREND LES PRODUITS ADMIN
 
   return (
     <div className="px-6 py-16">
@@ -37,7 +35,10 @@ const products = getProducts();
                 Modifier
               </Link>
 
-              <Link href={`/admin/products/delete/${p.id}`} className="text-red-400">
+              <Link
+                href={`/admin/products/delete/${p.id}`}
+                className="text-red-400"
+              >
                 Supprimer
               </Link>
             </div>
