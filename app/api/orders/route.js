@@ -1,35 +1,52 @@
-import { NextResponse } from "next/server";
-import { createAdminOrder } from "@/lib/admin-db";
+import { saveAdminOrder } from "@/lib/admin-db";
+import { createGuestUser, getUserById } from "@/lib/users";
 
 export async function POST(req) {
   try {
     const body = await req.json();
+    const { items, total, userId, mode } = body;
 
-    if (!body.items || !body.total)
-      return NextResponse.json({ error: "Invalid order" }, { status: 400 });
+    // Vérification minimale
+    if (!items || items.length === 0) {
+      return new Response(JSON.stringify({ error: "Panier vide." }), { status: 400 });
+    }
 
-    // Génère un ID unique pour la commande
-    const orderId = "CMD-" + Date.now();
+    let finalUserId = userId;
 
-    createAdminOrder({
-      id: orderId,
-      items: body.items,
-      total: body.total,
-      customer: body.customer || "Invité",
-      email: body.email || "",
-      address: body.address || "",
-      date: new Date().toISOString(),
+    // 🔵 MODE COMPTE (Option B)
+    if (mode === "account") {
+      const user = getUserById(userId);
+      if (!user) {
+        return new Response(JSON.stringify({ error: "Utilisateur inconnu." }), { status: 400 });
+      }
+    }
+
+    // 🟢 MODE INVITÉ (Option C)
+    if (mode === "guest") {
+      const guest = createGuestUser();
+      finalUserId = guest.id;
+    }
+
+    const order = {
+      id: "ord-" + Math.random().toString(36).substring(2, 9),
+      items,
+      total,
+      userId: finalUserId,
       status: "En attente",
-    });
+      date: Date.now(),
+      customer:
+        mode === "guest"
+          ? "Invité"
+          : getUserById(finalUserId)?.email || "Utilisateur",
+    };
 
-    return NextResponse.json({
-      success: true,
-      id: orderId,
-      total: body.total,
-      email: body.email,
+    saveAdminOrder(order);
+
+    return new Response(JSON.stringify({ success: true, order }), {
+      status: 200,
     });
-  } catch (e) {
-    console.error("Order API error:", e);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  } catch (error) {
+    console.error("Erreur API commande :", error);
+    return new Response(JSON.stringify({ error: "Erreur serveur" }), { status: 500 });
   }
 }
