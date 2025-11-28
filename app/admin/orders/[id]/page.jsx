@@ -1,12 +1,17 @@
 "use client";
 
-import { getAdminOrder } from "@/lib/admin-db.js";
+import { 
+  getAdminOrder, 
+  updateAdminOrderStatus 
+} from "@/lib/admin-db.js";
+
 import { useParams } from "next/navigation";
 import { useState } from "react";
 
 export default function OrderDetailPage() {
   const { id } = useParams();
-  const order = getAdminOrders().find((o) => o.id === id);
+
+  const order = getAdminOrder(id);   // ✅ correct
   const [status, setStatus] = useState(order?.status);
 
   if (!order) {
@@ -15,7 +20,7 @@ export default function OrderDetailPage() {
 
   function changeStatus(newStatus) {
     setStatus(newStatus);
-    updateAdminOrderStatus(id, newStatus);
+    updateAdminOrderStatus(id, newStatus);  // ✅ importée
     alert("Statut mis à jour !");
   }
 
@@ -35,9 +40,7 @@ export default function OrderDetailPage() {
         ))}
       </ul>
 
-      {/* STATUS */}
       <h2 className="text-xl font-semibold mb-3">Statut :</h2>
-
       <div className="flex gap-3">
         {["En attente", "Validée", "Expédiée", "Terminée"].map((st) => (
           <button
