@@ -1,178 +1,105 @@
 "use client";
 
-import { getCart, clearCart } from "@/lib/cart";
 import { useState } from "react";
+import { getCart, clearCart } from "@/lib/cart";
 
 export default function CheckoutPage() {
   const cart = getCart();
-  const total = cart.reduce((sum, p) => sum + p.price * p.quantity, 0);
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const [name, setName] = useState("");
+  const [mode, setMode] = useState("guest"); // guest | account
   const [email, setEmail] = useState("");
-  const [address, setAddress] = useState("");
-
-  if (cart.length === 0)
-    return (
-      <div className="px-6 py-16">
-        <h1 className="text-4xl font-bold mb-10">Checkout</h1>
-        <p>Votre panier est vide.</p>
-      </div>
-    );
+  const [userId, setUserId] = useState("");
 
   async function submitOrder() {
-    const orderData = {
+    const body = {
       items: cart,
       total,
-      customer: name || "Invité",
-      email,
-      address,
+      mode,
+      userId: mode === "account" ? userId : null,
     };
 
-    await fetch("/api/orders/new", {
+    const res = await fetch("/api/orders", {
       method: "POST",
-      body: JSON.stringify(orderData),
+      body: JSON.stringify(body),
     });
 
-    alert("Commande enregistrée !");
+    const data = await res.json();
+
+    if (data.error) {
+      alert(data.error);
+      return;
+    }
+
     clearCart();
-    location.href = "/cart";
+    alert("Commande validée !");
+    window.location.href = "/"; // redirect home
   }
 
   return (
-    <div className="px-6 py-16 max-w-xl mx-auto">
-      <h1 className="text-4xl font-bold mb-10 text-center">Checkout</h1>
-
-      <div className="space-y-6">
-        <div>
-          <label className="block mb-1">Nom complet</label>
-          <input
-            className="w-full px-3 py-2 rounded bg-neutral-900 border border-white/10"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Votre nom"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1">Email</label>
-          <input
-            type="email"
-            className="w-full px-3 py-2 rounded bg-neutral-900 border border-white/10"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="email@example.com"
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1">Adresse</label>
-          <textarea
-            className="w-full px-3 py-2 rounded bg-neutral-900 border border-white/10"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="Adresse complète"
-          />
-        </div>
-
-        <p className="text-xl font-semibold mt-4">Total : {total}€</p>
-
-        <button
-          className="w-full px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition"
-          onClick={submitOrder}
-        >
-          Confirmer la commande
-        </button>
-      </div>
-    </div>
-  );
-}
-"use client";
-
-import { getCart, clearCart } from "@/lib/cart";
-import { useState } from "react";
-
-export default function CheckoutPage() {
-  const cart = getCart();
-  const total = cart.reduce((sum, p) => sum + p.price * p.quantity, 0);
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-
-  if (cart.length === 0)
-    return (
-      <div className="px-6 py-16">
-        <h1 className="text-4xl font-bold mb-10">Paiement</h1>
-        <p>Votre panier est vide.</p>
-      </div>
-    );
-
-  async function handleOrder() {
-    const order = {
-      items: cart,
-      total,
-      customer: name || "Invité",
-      email,
-    };
-
-    await fetch("/api/orders/new", {
-      method: "POST",
-      body: JSON.stringify(order),
-    });
-
-    alert("Commande enregistrée !");
-    clearCart();
-    window.location.href = "/shop";
-  }
-
-  return (
-    <div className="px-6 py-16 max-w-3xl mx-auto">
-      <h1 className="text-4xl font-bold mb-10">Paiement</h1>
+    <div className="p-10 max-w-2xl mx-auto">
+      <h1 className="text-4xl font-bold mb-6">Paiement</h1>
 
       <div className="mb-10">
-        <h2 className="text-2xl font-semibold mb-4">Informations client</h2>
+        <h2 className="text-xl font-semibold mb-3">Votre panier :</h2>
+        {cart.map((item) => (
+          <div key={item.id} className="border border-white/10 p-3 rounded mb-2">
+            <p className="text-lg">{item.name}</p>
+            <p className="text-neutral-400">
+              {item.price}€ × {item.quantity}
+            </p>
+          </div>
+        ))}
 
-        <input
-          type="text"
-          placeholder="Votre nom (optionnel)"
-          className="w-full p-3 rounded bg-neutral-800 mb-4"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-
-        <input
-          type="email"
-          placeholder="Votre e-mail (pour confirmation)"
-          className="w-full p-3 rounded bg-neutral-800"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <p className="text-2xl font-semibold mt-4">Total : {total}€</p>
       </div>
 
-      <div className="mb-10">
-        <h2 className="text-2xl font-semibold mb-4">Votre commande</h2>
-        <div className="space-y-4">
-          {cart.map((item) => (
-            <div
-              key={item.id}
-              className="border border-white/10 bg-neutral-900 p-4 rounded-xl"
-            >
-              <p className="text-lg">{item.name}</p>
-              <p className="text-neutral-400">
-                {item.price}€ × {item.quantity}
-              </p>
-            </div>
-          ))}
+      {/* Mode de commande */}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-3">Mode de commande :</h2>
+
+        <div className="flex gap-4">
+          <button
+            className={`px-4 py-2 rounded ${
+              mode === "guest" ? "bg-white text-black" : "bg-neutral-700"
+            }`}
+            onClick={() => setMode("guest")}
+          >
+            Invité
+          </button>
+
+          <button
+            className={`px-4 py-2 rounded ${
+              mode === "account" ? "bg-white text-black" : "bg-neutral-700"
+            }`}
+            onClick={() => setMode("account")}
+          >
+            Compte
+          </button>
         </div>
-
-        <p className="text-xl mt-6">Total : {total}€</p>
       </div>
+
+      {/* MODE COMPTE */}
+      {mode === "account" && (
+        <div className="mb-6">
+          <p className="mb-2 text-neutral-400">
+            Entrez votre identifiant utilisateur (userId)
+          </p>
+          <input
+            type="text"
+            placeholder="Votre ID"
+            className="w-full p-2 rounded bg-neutral-800"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+          />
+        </div>
+      )}
 
       <button
-        onClick={handleOrder}
-        className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition w-full"
+        onClick={submitOrder}
+        className="px-6 py-3 bg-white text-black rounded-lg hover:bg-neutral-300 transition"
       >
-        Confirmer la commande
+        Valider la commande
       </button>
     </div>
   );
