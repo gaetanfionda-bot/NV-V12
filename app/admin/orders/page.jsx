@@ -1,6 +1,7 @@
 "use client";
 
-import { getAdminOrders } from "@/lib/admin-js";
+import { getAdminOrders } from "@/lib/admin-db.js";
+
 import { useState, useEffect } from "react";
 
 export default function AdminOrdersPage() {
