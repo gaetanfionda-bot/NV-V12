@@ -33,7 +33,8 @@ export default function CheckoutPage() {
 
     clearCart();
     alert("Commande validée !");
-    window.location.href = "/"; // redirect home
+window.location.href = `/checkout/success?orderId=${data.order.id}`;
+
   }
 
   return (
