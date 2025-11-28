@@ -1,4 +1,4 @@
-import { saveAdminOrder } from "@/lib/admin-db";
+import { addAdminOrder } from "@/lib/admin-db";
 import { createGuestUser, getUserById } from "@/lib/users";
 
 export async function POST(req) {
@@ -6,14 +6,12 @@ export async function POST(req) {
     const body = await req.json();
     const { items, total, userId, mode } = body;
 
-    // Vérification minimale
     if (!items || items.length === 0) {
       return new Response(JSON.stringify({ error: "Panier vide." }), { status: 400 });
     }
 
     let finalUserId = userId;
 
-    // 🔵 MODE COMPTE (Option B)
     if (mode === "account") {
       const user = getUserById(userId);
       if (!user) {
@@ -21,7 +19,6 @@ export async function POST(req) {
       }
     }
 
-    // 🟢 MODE INVITÉ (Option C)
     if (mode === "guest") {
       const guest = createGuestUser();
       finalUserId = guest.id;
@@ -34,13 +31,10 @@ export async function POST(req) {
       userId: finalUserId,
       status: "En attente",
       date: Date.now(),
-      customer:
-        mode === "guest"
-          ? "Invité"
-          : getUserById(finalUserId)?.email || "Utilisateur",
+      customer: mode === "guest" ? "Invité" : getUserById(finalUserId)?.email || "Utilisateur",
     };
 
-    saveAdminOrder(order);
+    addAdminOrder(order);
 
     return new Response(JSON.stringify({ success: true, order }), {
       status: 200,
