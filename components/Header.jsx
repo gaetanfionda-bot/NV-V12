@@ -14,9 +14,19 @@ export default function Header() {
         <Link href="/roulette">Roulette</Link>
         <Link href="/calendar">Calendrier</Link>
         <Link href="/account">Compte</Link>
-        <Link href="/admin" className="text-red-400">Admin</Link>
+
+        {/* BOUTON PANIER */}
+        <Link 
+          href="/cart" 
+          className="px-3 py-1 rounded-md border border-white/20 hover:bg-white hover:text-black transition"
+        >
+          Panier
+        </Link>
+
+        <Link href="/admin" className="text-red-400">
+          Admin
+        </Link>
       </nav>
     </header>
   );
 }
-// Header component
