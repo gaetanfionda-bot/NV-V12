@@ -6,7 +6,7 @@ export default function ProductCard({ product }) {
   return (
     <div className="border border-white/10 bg-neutral-900 p-5 rounded-xl">
       <img
-        src={product.image}
+        src={product.image || product.images?.[0]}
         alt={product.name}
         className="w-full h-56 object-cover rounded-md mb-4"
       />
