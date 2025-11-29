@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { getCart, removeFromCart, clearCart } from "@/lib/cart";
 
 export default function CartPage() {
@@ -48,25 +49,13 @@ export default function CartPage() {
       <div className="mt-10 p-6 bg-neutral-900 rounded-xl border border-white/10">
         <p className="text-xl mb-4">Total : {total}€</p>
 
-        <button
-          className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition w-full"
-          onClick={async () => {
-            await fetch("/api/orders/new", {
-              method: "POST",
-              body: JSON.stringify({
-                items: cart,
-                total,
-                customer: "Client Test",
-              }),
-            });
-
-            alert("Commande enregistrée !");
-            clearCart();
-            location.reload();
-          }}
+        {/* 🚀 Nouveau bouton : redirection vers le checkout */}
+        <Link
+          href="/checkout"
+          className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition w-full text-center block"
         >
           Commander
-        </button>
+        </Link>
       </div>
     </div>
   );
