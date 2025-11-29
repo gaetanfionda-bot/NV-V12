@@ -1,44 +1,44 @@
 "use client";
 
+import { getCart, removeFromCart } from "@/lib/cart";
 import Link from "next/link";
-import { getCart, removeFromCart, clearCart } from "@/lib/cart";
+import { useEffect, useState } from "react";
 
 export default function CartPage() {
-  const cart = getCart();
+  const [cart, setCart] = useState([]);
 
-  const total = cart.reduce((sum, p) => sum + p.price * p.quantity, 0);
+  useEffect(() => {
+    setCart(getCart());
+  }, []);
 
-  if (cart.length === 0)
-    return (
-      <div className="px-6 py-16">
-        <h1 className="text-4xl font-bold mb-10">Panier</h1>
-        <p>Votre panier est vide.</p>
-      </div>
-    );
+  const total = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   return (
-    <div className="px-6 py-16">
-      <h1 className="text-4xl font-bold mb-10">Panier</h1>
+    <div className="p-8 max-w-4xl mx-auto">
+      <h1 className="text-4xl font-bold mb-8">Votre Panier</h1>
+
+      {cart.length === 0 && <p>Votre panier est vide.</p>}
 
       <div className="space-y-6">
         {cart.map((item) => (
           <div
             key={item.id}
-            className="border border-white/10 bg-neutral-900 p-4 rounded-xl flex justify-between items-center"
+            className="border p-4 rounded-lg flex justify-between"
           >
             <div>
-              <h2 className="text-xl">{item.name}</h2>
-              <p className="text-neutral-400">
-                {item.price}€ × {item.quantity}
-              </p>
+              <h2 className="text-xl font-semibold">{item.name}</h2>
+              <p>{item.price}€ — Quantité : {item.quantity}</p>
             </div>
 
             <button
-              className="text-red-400"
               onClick={() => {
                 removeFromCart(item.id);
-                location.reload();
+                setCart(getCart());
               }}
+              className="text-red-400"
             >
               Supprimer
             </button>
@@ -46,17 +46,20 @@ export default function CartPage() {
         ))}
       </div>
 
-      <div className="mt-10 p-6 bg-neutral-900 rounded-xl border border-white/10">
-        <p className="text-xl mb-4">Total : {total}€</p>
+      {cart.length > 0 && (
+        <div className="mt-8">
+          <p className="text-xl font-bold mb-4">
+            Total : {total.toFixed(2)}€
+          </p>
 
-        {/* 🚀 Nouveau bouton : redirection vers le checkout */}
-        <Link
-          href="/checkout"
-          className="px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-neutral-300 transition w-full text-center block"
-        >
-          Commander
-        </Link>
-      </div>
+          <Link
+            href="/checkout"
+            className="px-6 py-3 bg-white text-black rounded-lg inline-block"
+          >
+            Procéder au paiement
+          </Link>
+        </div>
+      )}
     </div>
   );
 }
